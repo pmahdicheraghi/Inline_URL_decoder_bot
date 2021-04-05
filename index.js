@@ -2,32 +2,33 @@ import { Telegraf, Markup } from 'telegraf';
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-bot.on('inline_query', async (ctx) => {
+bot.on('inline_query', async (ctx, next) => {
 
-	let decoded_link = "Please wait ..."
-
-	try 
+	let decoded_link = "Please wait ...";
+	console.log(ctx.inlineQuery.query);
+	if (ctx.inlineQuery.query) 
 	{
-		decoded_link = decodeURI(ctx.inlineQuery.query);
-		console.log(decoded_link);
-		ctx.answerInlineQuery([{
-			type: 'article',
-			id: 'someID',
-			title: 'Result Found!',
-			description: decoded_link,
-			message_text: decoded_link
-		}]).catch(err => console.log(err.response.description));
+		try {
+			decoded_link = decodeURI(ctx.inlineQuery.query);
+			console.log(decoded_link);
+			ctx.answerInlineQuery([{
+				type: 'article',
+				id: 'someID',
+				title: 'Result Found!',
+				description: decoded_link,
+				message_text: decoded_link
+			}]).catch(err => console.log(err.response.description));
 
-	} catch (e)
-	{
-		console.error(e);
-		ctx.answerInlineQuery([{
-			type: 'article',
-			id: 'someID',
-			title: 'Result Not Found!',
-			description: 'URI malformed',
-			message_text: 'URI malformed'
-		}]).catch(err => console.log(err.response.description));
+		} catch (e) {
+			console.error(e);
+			ctx.answerInlineQuery([{
+				type: 'article',
+				id: 'someID',
+				title: 'Result Not Found!',
+				description: 'URI malformed',
+				message_text: 'URI malformed'
+			}]).catch(err => console.log(err.response.description));
+		}
 	}
 });
 
