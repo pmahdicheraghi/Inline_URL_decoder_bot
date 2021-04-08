@@ -4,61 +4,61 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.on('inline_query', async (ctx) => {
 	let input_link = ctx.inlineQuery.query;
-	if (ctx.inlineQuery.query)
+	if (!ctx.inlineQuery.query)
 	{
-		if (ctx.inlineQuery.query.length >= 255)
-		{
-			while (true)
-			{
-				try
-				{
-					input_link = decodeURI(input_link);
-					break;
-				}
-				catch (e)
-				{
-					input_link = input_link.slice(0, -1);
-				}
-			}
-			ctx.answerInlineQuery([{
-				type: 'article',
-				id: 'someID',
-				title: 'Buffer overflow!',
-				description: "Input link must have upto 254 character\nTry to guess",
-				message_text: input_link
-			}]).catch(err => console.log(err.response.description));
-			console.log("Buffer overflow occurred");
-		}
-		else
+		console.log("Empty query entered");
+		return;
+	}
+	
+	let decoded_link;
+	if (ctx.inlineQuery.query.length >= 255)
+	{
+		for (let i = 255; i > 0; i--)
 		{
 			try
 			{
-				input_link = decodeURI(input_link);
-				ctx.answerInlineQuery([{
-					type: 'article',
-					id: 'someID',
-					title: 'Successfully Decoded!',
-					description: "Result:\n" + input_link,
-					message_text: input_link
-				}]).catch(err => console.log(err.response.description));
-				console.log("link successfully decoded");
+				decoded_link = decodeURI(input_link);
+				break;
 			}
 			catch (e)
 			{
-				console.error(e.message);
-				ctx.answerInlineQuery([{
-					type: 'article',
-					id: 'someID',
-					title: 'ERROR! Result Not Found!',
-					description: 'Description:\nURI malformed',
-					message_text: 'NO match found!'
-				}]).catch(err => console.log(err.response.description));
+				input_link = input_link.slice(0, -1);
 			}
 		}
+		ctx.answerInlineQuery([{
+			type: 'article',
+			id: 'someID',
+			title: 'Buffer overflow!',
+			description: "Input link must have upto 254 character\nTry to guess",
+			message_text: decoded_link
+		}]).catch(err => console.log(err.response.description));
+		console.log("Buffer overflow occurred");
 	}
 	else
 	{
-		console.log("Empty query entered");
+		try
+		{
+			decoded_link = decodeURI(input_link);
+			ctx.answerInlineQuery([{
+				type: 'article',
+				id: 'someID',
+				title: 'Successfully Decoded!',
+				description: "Result:\n" + decoded_link,
+				message_text: decoded_link
+			}]).catch(err => console.log(err.response.description));
+			console.log("link successfully decoded");
+		}
+		catch (e)
+		{
+			console.error(e.message);
+			ctx.answerInlineQuery([{
+				type: 'article',
+				id: 'someID',
+				title: 'ERROR! Result Not Found!',
+				description: 'Description:\nURI malformed',
+				message_text: 'NO match found!'
+			}]).catch(err => console.log(err.response.description));
+		}
 	}
 });
 
