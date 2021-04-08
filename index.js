@@ -6,14 +6,14 @@ bot.on('inline_query', async (ctx) => {
 	let input_link = ctx.inlineQuery.query;
 	if (ctx.inlineQuery.query)
 	{
-		if (ctx.inlineQuery.query.length == 255)
+		if (ctx.inlineQuery.query.length >= 255)
 		{
-			while (err_handler)
+			while (true)
 			{
 				try
 				{
 					input_link = decodeURI(input_link);
-					err_handler = false;
+					break;
 				}
 				catch (e)
 				{
